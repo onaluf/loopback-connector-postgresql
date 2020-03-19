@@ -64,6 +64,15 @@ describe('postgresql connector', function() {
       loc: 'GeoPoint',
       created: Date,
       approved: Boolean,
+      tags: {
+        type: ['string'],
+      },
+      categories: {
+        type: ['string'],
+        postgresql: {
+          dataType: 'varchar[]',
+        },
+      },
     });
     created = new Date();
   });
@@ -199,6 +208,50 @@ describe('postgresql connector', function() {
         done();
       });
     });
+  });
+
+  it('should support creating and updating arrays with default dataType', function(done) {
+    let postId;
+    Post.create({title: 'Updating Arrays', content: 'Content', tags: ['AA', 'AB']})
+      .then((post)=> {
+        postId = post.id;
+        post.should.have.property('tags');
+        post.tags[1].should.eql('AB');
+        return Post.updateAll({where: {id: postId}}, {tags: ['AA', 'AC']});
+      })
+      .then((wooot)=> {
+        return Post.findOne({where: {id: postId}});
+      })
+      .then((post)=> {
+        post.should.have.property('tags');
+        post.tags[1].should.eql('AC');
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      });
+  });
+
+  it('should support creating and updating arrays with "varchar[]" dataType', function(done) {
+    let postId;
+    Post.create({title: 'Updating Arrays', content: 'Content', categories: ['AA', 'AB']})
+      .then((post)=> {
+        postId = post.id;
+        post.should.have.property('categories');
+        post.categories[1].should.eql('AB');
+        return Post.updateAll({where: {id: postId}}, {categories: ['AA', 'AC']});
+      })
+      .then((wooot)=> {
+        return Post.findOne({where: {id: postId}});
+      })
+      .then((post)=> {
+        post.should.have.property('categories');
+        post.categories[1].should.eql('AC');
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      });
   });
 
   it('should support boolean types with false value', function(done) {

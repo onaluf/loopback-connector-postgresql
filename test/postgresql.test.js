@@ -216,15 +216,19 @@ describe('postgresql connector', function() {
       .then((post)=> {
         postId = post.id;
         post.should.have.property('tags');
-        post.tags[1].should.eql('AB');
+        post.tags.should.be.Array();
+        post.tags.length.should.eql(2);
+        post.tags.should.eql(['AA', 'AB']);
         return Post.updateAll({where: {id: postId}}, {tags: ['AA', 'AC']});
       })
-      .then((wooot)=> {
+      .then(()=> {
         return Post.findOne({where: {id: postId}});
       })
       .then((post)=> {
         post.should.have.property('tags');
-        post.tags[1].should.eql('AC');
+        post.tags.should.be.Array();
+        post.tags.length.should.eql(2);
+        post.tags.should.eql(['AA', 'AC']);
         done();
       })
       .catch((error) => {
@@ -238,15 +242,20 @@ describe('postgresql connector', function() {
       .then((post)=> {
         postId = post.id;
         post.should.have.property('categories');
-        post.categories[1].should.eql('AB');
+        post.should.have.property('categories');
+        post.categories.should.be.Array();
+        post.categories.length.should.eql(2);
+        post.categories.should.eql(['AA', 'AB']);
         return Post.updateAll({where: {id: postId}}, {categories: ['AA', 'AC']});
       })
-      .then((wooot)=> {
+      .then(()=> {
         return Post.findOne({where: {id: postId}});
       })
       .then((post)=> {
         post.should.have.property('categories');
-        post.categories[1].should.eql('AC');
+        post.categories.should.be.Array();
+        post.categories.length.should.eql(2);
+        post.categories.should.eql(['AA', 'AC']);
         done();
       })
       .catch((error) => {
